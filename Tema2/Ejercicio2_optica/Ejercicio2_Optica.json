@@ -1,0 +1,327 @@
+
+{
+    "id_cliente": 1,
+    "nombre": "Juan",
+    "apellido": "Romero",
+    "direccion_postal": {
+        "calle": "Avenida Paralel",
+        "numero": "102"   
+    },
+    "telefono": "627142538",
+    "email": "JuanRomeo@gmail.com",
+    "fecha_registro": new Date("2024-02-20 12:00:00")
+}  
+{
+    "id_cliente": 2,
+    "nombre": "Sonia",
+    "apellido": "Peterson",
+    "direccion_postal": {
+        "calle": "Avenida Rocafort",
+        "numero": "38"  
+    },
+    "telefono": "627142538",
+    "email": "Sonipete@gmail.com",
+    "fecha_registro": new Date("2023-02-14 15:05:00")
+}  
+{
+    "id_cliente": 3,
+    "nombre": "Marta",
+    "apellido": "Paz",
+    "direccion_postal": {
+        "calle": "Pelay",
+        "numero": "192"  
+    },
+    "telefono": "627142538",
+    "email": "Pazma@gmail.com",
+    "fecha_registro": new Date("2022-08-18 19:00:00")
+}
+
+{
+    "id_empleado": 1,
+    "nombre": "Rosa",
+    "apellido": "Correa"
+    
+}  
+{
+    "id_empleado": 2,
+    "nombre": "Angel",
+    "apellido": "Serio"
+    
+}  
+
+{
+    "id_gafa": 1,
+    "marca": "Ray-Ban",
+    "graduacion_vidrio": {
+        "Right": "2.3",
+        "Left": "2.0"
+    },
+    "tipo_montura": "Metálica",
+    "color_montura": "Nergro",
+    "color_vidrio": {
+      "Right": "Verde",
+      "Left": "Verde"
+    },
+    "precio": "127.0",
+    "id_proveedor": 1
+}
+{
+    "id_gafa": 2,
+    "marca": "Prada",
+    "graduacion_vidrio": {
+        "Right": "2.0",
+        "Left": "1.5"
+    },
+    "tipo_montura": "Pasta",
+    "color_montura": "Blanco",
+    "color_vidrio": {
+      "Right": "Negro",
+      "Left": "Negro"
+    },
+    "precio": "225.99",
+    "id_proveedor": 2
+}
+
+{
+    "id_proveedor": 1,
+    "nombre": "Universitaria",
+    "direccion": {
+        "calle": "Gran Via",
+        "numero": "182",
+        "piso": "Planta baja",
+        "puerta": "1",
+        "ciudad": "Barcelona",
+        "codigo_postal": "08015",
+        "pais": "España"
+    },
+    "telefono": "669 343 408",
+    "fax": "669 343 408",
+    "nif": "19045092B"
+}
+{
+    "id_proveedor": 2,
+    "nombre": "Cottet",
+    "direccion": {
+        "calle": "Paseo de Gracia",
+        "numero": "18",
+        "piso": "Planta baja",
+        "puerta": "1",
+        "ciudad": "Barcelona",
+        "codigo_postal": "08030",
+        "pais": "España"
+    },
+    "telefono": "669 385 412",
+    "fax": "669 385 412",
+    "nif": "25045562B"
+}
+{
+    "id_proveedor": 3,
+    "nombre": "Multiopticas",
+    "direccion": {
+        "calle": "Rambla Sant Antoni",
+        "numero": "56",
+        "piso": "Planta baja",
+        "puerta": "1",
+        "ciudad": "Barcelona",
+        "codigo_postal": "08016",
+        "pais": "España"
+    },
+    "telefono": "669 172 412",
+    "fax": "669 172 412",
+    "nif": "25580562B"
+}
+
+{
+    "id_venta": 1,
+    "id_cliente": 1,
+    "id_gafa": [1],
+    "id_empleado": 1,
+    "fecha_venta": new Date ("2024-01-20 10:00:00")
+}
+{
+    "id_venta": 2,
+    "id_cliente": 1,
+    "id_gafa": [1,2],
+    "id_empleado": 1,
+    "fecha_venta": new Date("2024-01-18 10:00:00")
+}
+
+
+    
+db.venta.aggregate([
+    {
+        $lookup: {
+            from: 'cliente',
+            localField: 'id_cliente',
+            foreignField: 'id_cliente',
+            as: 'detalles_cliente'
+        }
+    },
+    {
+        $lookup: {
+            from: 'gafa',
+            localField: 'id_gafa',
+            foreignField: 'id_gafa',
+            as: 'detalles_gafa'
+        }
+    },
+    {
+        $lookup: {
+            from: 'proveedor',
+            localField: 'id_proveedor',
+            foreignField: 'id_proveedor',
+            as: 'detalles_proveedor'
+        }
+    },
+    {
+        $replaceRoot: {
+            newRoot: {
+                $mergeObjects: [
+                    { $arrayElemAt: ['$detalles_cliente', 0] },
+                    { $arrayElemAt: ['$detalles_gafa', 0] },
+                    { $arrayElemAt: ['$detalles_proveedor', 0] },
+                    "$$ROOT"
+                ]
+            }
+        }
+    },
+    {
+        $project: {
+            _id:0,
+            marca_gafa: 1,
+            tipo_montura: 1,
+            nombre_proveedor:1,
+            direccion:1,
+            precio: 1,
+           
+        }
+    },
+    {
+        $out: 'Detalle_proveedor-cliente'
+    }
+])
+
+db.venta.aggregate([
+    {
+        $lookup: {
+            from: 'cliente',
+            localField: 'id_cliente',
+            foreignField: 'id_cliente',
+            as: 'detalles_cliente'
+        }
+    },
+    {
+        $unwind: '$id_gafa'
+    },  
+    {
+        $lookup: {
+            from: 'gafa',
+            localField: 'id_gafa',
+            foreignField: 'id_gafa',
+            as: 'detalles_gafa'
+        }
+    },
+    {
+        $lookup: {
+            from: 'proveedor',
+            localField: 'detalles_gafa.id_proveedor',
+            foreignField: 'id_proveedor',
+            as: 'detalles_proveedor'
+        }
+    },
+    {
+        $unwind: '$detalles_cliente'  
+    },
+    {
+        $unwind: '$detalles_gafa'  
+    },
+    {
+        $unwind: '$detalles_proveedor'  
+    },
+    {
+        $project: {
+            _id: 0,
+            marca_gafa: '$detalles_gafa.marca',
+            tipo_montura: '$detalles_gafa.tipo_montura',
+            nombre_proveedor: '$detalles_proveedor.nombre',
+            direccion_proveedor: '$detalles_proveedor.direccion',
+            precio: '$detalles_gafa.precio',
+            
+            info_cliente:{
+            nombre: '$detalles_cliente.nombre',
+            apellido:'$detalles_cliente.apellido',
+            direccion_cliente:'$detalles_cliente.direccion_postal',
+            telefono: '$detalles_cliente.telefono',
+            email:'$detalles_cliente.email',
+            fecha_registro:'$detalles_cliente.fecha_registro'}
+        }
+    },
+    {
+        $out: 'Detalle_proveedor-cliente'
+    }
+])
+
+-- buscar por marca
+db.venta.aggregate([
+    {
+        $lookup: {
+            from: 'cliente',
+            localField: 'id_cliente',
+            foreignField: 'id_cliente',
+            as: 'detalles_cliente'
+        }
+    },
+    {
+        $unwind: '$id_gafa'
+    },  
+    {
+        $lookup: {
+            from: 'gafa',
+            localField: 'id_gafa',
+            foreignField: 'id_gafa',
+            as: 'detalles_gafa'
+        }
+    },
+    {
+        $lookup: {
+            from: 'proveedor',
+            localField: 'detalles_gafa.id_proveedor',
+            foreignField: 'id_proveedor',
+            as: 'detalles_proveedor'
+        }
+    },
+    {
+        $unwind: '$detalles_cliente'  
+    },
+    {
+        $unwind: '$detalles_gafa'  
+    },
+    {
+        $unwind: '$detalles_proveedor'  
+    },
+    {
+        $project: {
+            _id: 0,
+            marca_gafa: '$detalles_gafa.marca',
+            tipo_montura: '$detalles_gafa.tipo_montura',
+            nombre_proveedor: '$detalles_proveedor.nombre',
+            direccion_proveedor: '$detalles_proveedor.direccion',
+            precio: '$detalles_gafa.precio',
+            
+            info_cliente:{
+            nombre: '$detalles_cliente.nombre',
+            apellido:'$detalles_cliente.apellido',
+            direccion_cliente:'$detalles_cliente.direccion_postal',
+            telefono: '$detalles_cliente.telefono',
+            email:'$detalles_cliente.email',
+            fecha_registro:'$detalles_cliente.fecha_registro'}
+        }
+    },
+    {
+        $match:{'marca_gafa':'Prada'}
+    },
+    {
+        $out: 'Detalle_proveedor-cliente-marca'
+    }
+])
+

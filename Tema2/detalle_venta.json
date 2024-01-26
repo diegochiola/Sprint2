@@ -1,0 +1,18 @@
+
+Bajo el alisas: Cliente
+los siguientes datos:
+nombre
+direccion_postal Object
+telefono
+email 
+fecha_registro
+
+
+Bajo el alisas: Ultima_compra
+los siguientes datos:
+marca
+graduacion_vidrio Object
+color_vidrio Object
+tipo_montura
+precio
+
