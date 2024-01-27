@@ -28,8 +28,21 @@ db.restaurant.find({"borough": "Bronx" },{_id: 0,restaurant_id:1, name: 1, borou
 7.Escribe una consulta para mostrar los 5 restaurantes después de saltar los primeros 5 que sean del Bronx.
 db.restaurant.find({"borough": "Bronx" },{_id: 0,restaurant_id:1, name: 1, borough: 1, "adress.zipcode": 1}).pretty().skip(5).limit(5)
 8.Escribe una consulta para encontrar los restaurantes que tienen algún resultado mayor de 90.
-db.restaurant.find({"grades.score": {$gte: 90}}).pretty()
-9.
-
-
+db.restaurant.find({"grades.score": {$gt: 90}}).pretty()
+9.Escribe una consulta para encontrar los restaurantes que tienen un resultado mayor que 80 pero menos que 100.
+db.restaurant.find({"grades.score": {$gt: 80, $lte: 100}}).pretty()
+10.Escribe una consulta para encontrar los restaurantes situados en una longitud inferior a -95.754168.
+db.restaurant.find({"address.coord": {$lte: -95.754168}}).pretty()
+11.Escribe una consulta de MongoDB para encontrar los restaurantes que no cocinan comida 'American' y tienen algún resultado superior a 70 y latitud inferior a -65.754168.
+db.restaurant.find({$and: [{ "cuisine": { $ne: 'American' } },{ "grades.score": { $gt: 70 } },{ "address.coord.1": { $lt: -65.754168 } } ]}).pretty()
+12.Escribe una consulta para encontrar los restaurantes que no preparan comida 'American' y tienen algún resultado superior a 70 y que, además, se localizan en longitudes inferiores a -65.754168. Nota: Realiza esta consulta sin utilizar operador $and.
+db.restaurant.find({"cuisine": {$ne:'American'},"grades.score": { $gt: 70 },"address.coord.0": { $lt: -65.754168 }}).pretty()
+13.Escribe una consulta para encontrar los restaurantes que no preparan comida 'American', tienen alguna nota 'A' y no pertenecen a Brooklyn. Se debe mostrar el documento según la cuisine en orden descendente.
+db.restaurant.find({"cuisine": {$ne:'American'},"grades.grade": 'A',"borough":{$ne:"Brooklyn"}}).sort({"cusine":-1}).pretty()
+14.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que contienen 'Wil' en las tres primeras letras en su nombre.
+db.restaurant.find({"name": { $regex: /^Wil/i }}, {restaurante_id:1, name:1, borough:1,cuisine:1}).pretty()
+15.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que contienen 'ces' en las últimas tres letras en su nombre.
+db.restaurant.find({"name": { $regex: /ces$/i }}, {restaurante_id:1, name:1, borough:1,cuisine:1}).pretty()
+16.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que contienen 'Reg' en cualquier lugar de su nombre.
+db.restaurant.find({"name": { $regex: /ces$/i }}, {restaurante_id:1, name:1, borough:1,cuisine:1}).pretty()
 
