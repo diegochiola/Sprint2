@@ -44,5 +44,17 @@ db.restaurant.find({"name": { $regex: /^Wil/i }}, {restaurante_id:1, name:1, bor
 15.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que contienen 'ces' en las últimas tres letras en su nombre.
 db.restaurant.find({"name": { $regex: /ces$/i }}, {restaurante_id:1, name:1, borough:1,cuisine:1}).pretty()
 16.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que contienen 'Reg' en cualquier lugar de su nombre.
-db.restaurant.find({"name": { $regex: /ces$/i }}, {restaurante_id:1, name:1, borough:1,cuisine:1}).pretty()
-
+db.restaurant.find({"name": { $regex: /.*Reg.*/i }}, {restaurant_id: 1, name: 1, borough: 1, cuisine: 1}).pretty()
+17.Escribe una consulta para encontrar los restaurantes que pertenecen al Bronx y preparan platos americanos o chinos.
+db.restaurant.find({$and:[{ "borough": "Bronx" },{ $or:[{ "cuisine": "American" },{ "cuisine": "Chinese"}]}]}).pretty()
+18.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que pertenecen a Staten Island, Queens, Bronx o Brooklyn.
+db.restaurant.find({"name": { $regex: /^Wil/i }}, {restaurant_id:1, name:1, borough:1,cuisine:1}).pretty()
+19.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que pertenecen a Staten Island, Queens, Bronx o Brooklyn.
+db.restaurant.find({$nor:[{ "borough":'Staten Island'},{ "borough":'Queens'},{ "borough":'Bronx'},{"borough":'Brooklyn'}]}, {restaurant_id:1, name:1, borough:1,cuisine:1}).pretty()
+20.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que consigan una nota menor que 10.
+db.restaurant.find({ "grades.score":{$lt:10}}, {restaurant_id:1, name:1, borough:1,cuisine:1}).pretty()
+21.Escribe una consulta para encontrar el restaurante_id, name, borough y cuisine para aquellos restaurantes que preparan marisco ('seafood') excepto si son 'American', 'Chinese' o el name del restaurante comienza con letras 'Wil'.
+db.restaurant.find({$and:[{ cuisine: "Seafood" },{$nor:[{ cuisine: "American" },{ cuisine: "Chinese" },{ name: { $regex: /^Wil/i } }]}]},{ restaurant_id: 1, name: 1, borough: 1, cuisine: 1 }).pretty()
+22.Escribe una consulta para encontrar el restaurante_id, name y gradas para aquellos restaurantes que consigan un grade de "A" y un resultado de 11 con un ISODate "2014-08-11T00:00:00Z".
+db.restaurant.find({$and:[{"grades.grade":'A'}, {"grades.score":11},{"grades.date":{$eq:ISODate("2014-08-11T00:00:00Z")}}]},{restaurant_id: 1, name: 1, "grades.grade": 1 }).pretty()
+ 
